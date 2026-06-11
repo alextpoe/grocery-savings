@@ -1,0 +1,13 @@
+# Check if lockfile is in sync
+echo "Checking lockfile sync..."
+
+if ! pnpm install --frozen-lockfile --ignore-scripts 2>/dev/null; then
+  echo ""
+  echo "ERROR: pnpm-lock.yaml is out of sync with package.json"
+  echo ""
+  echo "Run 'pnpm install' to update the lockfile, then commit again."
+  echo ""
+  exit 1
+fi
+
+echo "Lockfile is in sync."

@@ -1,0 +1,28 @@
+{
+  "name": "@grocery-savings/utils",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schemas": "./src/schemas/index.ts",
+    "./atoms": "./src/atoms/index.ts",
+    "./formatters": "./src/formatters/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "jotai": "^2.6.4",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@grocery-savings/config": "workspace:*",
+    "typescript": "^5.3.3",
+    "vitest": "^1.3.0"
+  }
+}
