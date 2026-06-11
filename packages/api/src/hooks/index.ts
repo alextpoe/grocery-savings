@@ -10,8 +10,22 @@ import {
 } from '@tanstack/react-query'
 import { createContext, useContext } from 'react'
 
-import { authMutations, profileMutations } from '../mutations'
-import { authQueries, profileQueries, storageQueries } from '../queries'
+import {
+  authMutations,
+  mealPlanMutations,
+  preferencesMutations,
+  profileMutations,
+} from '../mutations'
+import {
+  authQueries,
+  mealPlanQueries,
+  preferencesQueries,
+  profileQueries,
+  recipeTemplateQueries,
+  saleItemQueries,
+  storageQueries,
+  storeQueries,
+} from '../queries'
 import { type Database, type Profile, type UpdateTables } from '../types'
 
 type Client = SupabaseClient<Database>
@@ -219,6 +233,137 @@ export function useUpdateAvatar(
     mutationFn: (vars) => profileMutations.updateAvatar(client, vars),
     onSuccess: (data, vars, ...args) => {
       queryClient.invalidateQueries({ queryKey: ['profiles'] })
+      options?.onSuccess?.(data, vars, ...args)
+    },
+  })
+}
+
+/**
+ * Grocery reference-data hooks (public; no auth required)
+ */
+export function useStores(
+  zip: string,
+  radiusMiles: number,
+  options?: Omit<
+    UseQueryOptions<QueryData<typeof storeQueries.byZipRadius>>,
+    'queryKey' | 'queryFn'
+  >
+) {
+  const client = useSupabase()
+  const query = storeQueries.byZipRadius(zip, radiusMiles)
+
+  return useQuery({
+    enabled: /^\d{5}$/.test(zip),
+    ...options,
+    queryKey: query.queryKey,
+    queryFn: () => query.queryFn(client),
+  })
+}
+
+export function useSaleItems(
+  storeIds: string[],
+  options?: Omit<
+    UseQueryOptions<QueryData<typeof saleItemQueries.byStores>>,
+    'queryKey' | 'queryFn'
+  >
+) {
+  const client = useSupabase()
+  const query = saleItemQueries.byStores(storeIds)
+
+  return useQuery({
+    enabled: storeIds.length > 0,
+    ...options,
+    queryKey: query.queryKey,
+    queryFn: () => query.queryFn(client),
+  })
+}
+
+export function useRecipeTemplates(
+  options?: Omit<
+    UseQueryOptions<QueryData<typeof recipeTemplateQueries.all>>,
+    'queryKey' | 'queryFn'
+  >
+) {
+  const client = useSupabase()
+  const query = recipeTemplateQueries.all()
+
+  return useQuery({
+    ...options,
+    queryKey: query.queryKey,
+    queryFn: () => query.queryFn(client),
+  })
+}
+
+/**
+ * Grocery user-data hooks (user-scoped; null/empty when logged out)
+ */
+export function usePreferences(
+  options?: Omit<
+    UseQueryOptions<QueryData<typeof preferencesQueries.current>>,
+    'queryKey' | 'queryFn'
+  >
+) {
+  const client = useSupabase()
+  const query = preferencesQueries.current()
+
+  return useQuery({
+    ...options,
+    queryKey: query.queryKey,
+    queryFn: () => query.queryFn(client),
+  })
+}
+
+export function useUpsertPreferences(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof preferencesMutations.upsert>>,
+    Error,
+    Parameters<typeof preferencesMutations.upsert>[1]
+  >
+) {
+  const client = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    ...options,
+    mutationFn: (vars) => preferencesMutations.upsert(client, vars),
+    onSuccess: (data, vars, ...args) => {
+      queryClient.invalidateQueries({ queryKey: ['preferences'] })
+      options?.onSuccess?.(data, vars, ...args)
+    },
+  })
+}
+
+export function useSavedMealPlans(
+  options?: Omit<
+    UseQueryOptions<QueryData<typeof mealPlanQueries.list>>,
+    'queryKey' | 'queryFn'
+  >
+) {
+  const client = useSupabase()
+  const query = mealPlanQueries.list()
+
+  return useQuery({
+    ...options,
+    queryKey: query.queryKey,
+    queryFn: () => query.queryFn(client),
+  })
+}
+
+export function useSaveMealPlan(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof mealPlanMutations.save>>,
+    Error,
+    Parameters<typeof mealPlanMutations.save>[1]
+  >
+) {
+  const client = useSupabase()
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    ...options,
+    mutationFn: (vars) => mealPlanMutations.save(client, vars),
+    onSuccess: (data, vars, ...args) => {
+      queryClient.invalidateQueries({ queryKey: ['meal-plans'] })
       options?.onSuccess?.(data, vars, ...args)
     },
   })

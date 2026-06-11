@@ -1,8 +1,7 @@
+# Manual-only: requires VERCEL_*/EXPO_TOKEN secrets not configured for this repo
 name: Vercel Preview
 
-on:
-  pull_request:
-    branches: [main]
+on: workflow_dispatch
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

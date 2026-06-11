@@ -9,6 +9,7 @@
     "./queries": "./src/queries/index.ts",
     "./mutations": "./src/mutations/index.ts",
     "./hooks": "./src/hooks/index.ts",
+    "./providers": "./src/providers/index.ts",
     "./types": "./src/types/index.ts"
   },
   "scripts": {
@@ -19,6 +20,7 @@
     "generate": "supabase gen types typescript --local > src/types/database.ts"
   },
   "dependencies": {
+    "@grocery-savings/utils": "workspace:*",
     "@supabase/supabase-js": "^2.39.7",
     "@tanstack/react-query": "^5.24.1"
   },

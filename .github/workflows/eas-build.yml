@@ -1,11 +1,7 @@
+# Manual-only: requires VERCEL_*/EXPO_TOKEN secrets not configured for this repo
 name: EAS Build
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/mobile/**'
-      - 'packages/**'
   workflow_dispatch:
     inputs:
       platform:
@@ -50,12 +46,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build (push to main)
-        if: github.event_name == 'push'
-        working-directory: apps/mobile
-        run: eas build --platform all --profile preview --non-interactive
-
-      - name: Build (manual)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Build
         working-directory: apps/mobile
         run: eas build --platform ${{ inputs.platform }} --profile ${{ inputs.profile }} --non-interactive

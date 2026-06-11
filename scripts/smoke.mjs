@@ -121,6 +121,99 @@ try {
   await alice.client.storage.from('avatars').remove([path])
   ok('avatars bucket: per-user upload + signed URL retrieval work')
 
+  // --- 6. Reference data readable: stores, sale_items, recipe_templates ----
+  const { data: stores, error: storesError } = await alice.client
+    .from('stores')
+    .select('*')
+  if (storesError) fail(`reading stores: ${storesError.message}`)
+  if (!stores || stores.length !== 3)
+    fail(`expected 3 stores, got ${stores?.length ?? 0}`)
+
+  const { data: saleItems, error: saleItemsError } = await alice.client
+    .from('sale_items')
+    .select('*')
+  if (saleItemsError) fail(`reading sale_items: ${saleItemsError.message}`)
+  if (!saleItems || saleItems.length < 40)
+    fail(`expected >= 40 sale_items, got ${saleItems?.length ?? 0}`)
+
+  const { data: recipes, error: recipesError } = await alice.client
+    .from('recipe_templates')
+    .select('*')
+  if (recipesError) fail(`reading recipe_templates: ${recipesError.message}`)
+  if (!recipes || recipes.length < 15)
+    fail(`expected >= 15 recipe_templates, got ${recipes?.length ?? 0}`)
+
+  ok('reference data readable: stores/sale_items/recipe_templates seeded and SELECT policies work')
+
+  // --- 7. Reference data is read-only (RLS blocks client inserts) -----------
+  const fakeStoreId = '00000000-0000-0000-0000-000000000001'
+  const { error: insertError } = await alice.client
+    .from('sale_items')
+    .insert({
+      store_id: fakeStoreId,
+      name: 'smoke test item',
+      category: 'other',
+      ingredient_key: 'smoke_test',
+      regular_price: 1.00,
+      sale_price: 0.50,
+      unit: 'each',
+      servings_per_unit: 1,
+      dietary_flags: [],
+      sale_starts_at: '2024-01-01',
+      sale_ends_at: '2030-12-31',
+    })
+  if (!insertError)
+    fail('RLS BREACH: client can write to reference table sale_items')
+  ok('reference tables are read-only to clients')
+
+  // --- 8. user_preferences RLS: own-row upsert works; cross-user blocked ----
+  const { error: upsertPrefError } = await alice.client
+    .from('user_preferences')
+    .upsert({ user_id: alice.id, zip: '45208', dietary_restrictions: ['dairy_free'] })
+  if (upsertPrefError) fail(`alice upsert user_preferences: ${upsertPrefError.message}`)
+
+  const { data: alicePrefs, error: readPrefError } = await alice.client
+    .from('user_preferences')
+    .select('*')
+    .eq('user_id', alice.id)
+    .single()
+  if (readPrefError) fail(`alice read own user_preferences: ${readPrefError.message}`)
+  if (alicePrefs?.zip !== '45208')
+    fail(`user_preferences zip mismatch: expected 45208, got ${alicePrefs?.zip}`)
+
+  const { data: bobSeesAlicePrefs } = await bob.client
+    .from('user_preferences')
+    .select('*')
+    .eq('user_id', alice.id)
+  if (bobSeesAlicePrefs && bobSeesAlicePrefs.length > 0)
+    fail('RLS BREACH: bob can read alice\'s user_preferences')
+  ok('user_preferences: own-row upsert works; cross-user read blocked')
+
+  // --- 9. saved_meal_plans RLS: own-row insert works; cross-user blocked ----
+  const { data: insertedPlan, error: insertPlanError } = await alice.client
+    .from('saved_meal_plans')
+    .insert({ user_id: alice.id, title: 'smoke plan', plan: { meals: [] } })
+    .select()
+    .single()
+  if (insertPlanError) fail(`alice insert saved_meal_plans: ${insertPlanError.message}`)
+
+  const { data: alicePlan, error: readPlanError } = await alice.client
+    .from('saved_meal_plans')
+    .select('*')
+    .eq('id', insertedPlan.id)
+    .single()
+  if (readPlanError) fail(`alice read own saved_meal_plans: ${readPlanError.message}`)
+  if (alicePlan?.title !== 'smoke plan')
+    fail(`saved_meal_plans title mismatch: expected 'smoke plan', got '${alicePlan?.title}'`)
+
+  const { data: bobSeesPlan } = await bob.client
+    .from('saved_meal_plans')
+    .select('*')
+    .eq('user_id', alice.id)
+  if (bobSeesPlan && bobSeesPlan.length > 0)
+    fail('RLS BREACH: bob can read alice\'s saved_meal_plans')
+  ok('saved_meal_plans: own-row insert works; cross-user read blocked')
+
   console.log(
     '\n✓ verify:db passed — schema, RLS, and storage behave as expected'
   )

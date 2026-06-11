@@ -205,6 +205,9 @@ importers:
 
   packages/api:
     dependencies:
+      '@grocery-savings/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@supabase/supabase-js':
         specifier: ^2.39.7
         version: 2.91.1
