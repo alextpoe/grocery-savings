@@ -1,11 +1,11 @@
 'use client'
 
 import { cn } from '@grocery-savings/ui-web'
+import { type Route } from 'next'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-
-const navItems = [
+const navItems: { href: Route; label: string }[] = [
   { href: '/dashboard', label: 'Dashboard' },
   { href: '/settings', label: 'Settings' },
 ]
@@ -16,7 +16,7 @@ export function DashboardNav() {
   return (
     <nav className="flex items-center gap-6">
       <Link href="/" className="text-xl font-bold">
-        Golden
+        Grocery Savings
       </Link>
       <div className="flex items-center gap-4">
         {navItems.map((item) => (

@@ -77,20 +77,9 @@ export default function HomePage() {
           <p className="text-sm text-muted-foreground">
             Grocery Savings — meals from this week&apos;s deals.
           </p>
-          <div className="flex gap-4">
-            <Link
-              href="/privacy"
-              className="text-sm text-muted-foreground hover:underline"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-sm text-muted-foreground hover:underline"
-            >
-              Terms
-            </Link>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            Pilot market: Cincinnati, OH
+          </p>
         </div>
       </footer>
     </div>

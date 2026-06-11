@@ -4,6 +4,7 @@ import { useSignIn } from '@grocery-savings/api/hooks'
 import { Button, Input, Label } from '@grocery-savings/ui-web'
 import { signInSchema, type SignInInput } from '@grocery-savings/utils/schemas'
 import { Loader2 } from 'lucide-react'
+import { type Route } from 'next'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -11,7 +12,8 @@ import { useState } from 'react'
 export function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/dashboard'
+  // Cast: redirect comes from the query string; typedRoutes can't verify it
+  const redirect = (searchParams.get('redirect') || '/dashboard') as Route
 
   const [formData, setFormData] = useState<SignInInput>({
     email: '',
