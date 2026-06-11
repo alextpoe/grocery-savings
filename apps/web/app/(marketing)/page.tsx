@@ -1,7 +1,6 @@
 import { Button } from '@grocery-savings/ui-web'
-import { ArrowRight, Zap, Shield, Smartphone } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
-
 
 export default function HomePage() {
   return (
@@ -10,7 +9,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold">Golden</span>
+            <span className="text-xl font-bold">Grocery Savings</span>
           </Link>
           <nav className="flex items-center gap-4">
             <Link
@@ -20,7 +19,7 @@ export default function HomePage() {
               Sign In
             </Link>
             <Button asChild>
-              <Link href="/sign-up">Get Started</Link>
+              <Link href="/sign-up">Sign up</Link>
             </Button>
           </nav>
         </div>
@@ -30,47 +29,42 @@ export default function HomePage() {
       <main className="flex-1">
         <section className="container flex flex-col items-center justify-center gap-6 pb-8 pt-24 text-center md:pt-32">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-            Build faster with
-            <span className="text-primary"> Golden</span>
+            Turn grocery sales into meals, not just savings.
           </h1>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-            A production-ready monorepo starter with Next.js, React Native,
-            Supabase, and all the tools you need to ship your next product.
+            Tell us your ZIP code, dietary needs, and budget per serving. We
+            scan this week&apos;s deals, keep only the items at or above your
+            minimum % off, and turn them into real meal ideas with recipes and a
+            store-by-store shopping list.
           </p>
           <div className="flex gap-4">
             <Button size="lg" asChild>
-              <Link href="/sign-up">
-                Get Started
+              <Link href="/plan">
+                Get started
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="https://github.com">View on GitHub</Link>
             </Button>
           </div>
         </section>
 
-        {/* Features Section */}
+        {/* How it works */}
         <section className="container py-24">
           <div className="mx-auto max-w-5xl">
             <h2 className="mb-12 text-center text-3xl font-bold">
-              Everything you need
+              How it works
             </h2>
             <div className="grid gap-8 md:grid-cols-3">
               <FeatureCard
-                icon={<Zap className="h-8 w-8 text-primary" />}
-                title="Lightning Fast"
-                description="Built on Next.js 14 with the App Router for optimal performance and developer experience."
+                title="Set your preferences"
+                description="Your ZIP code, search radius, household size, dietary restrictions, budget per serving, and the minimum discount you care about."
               />
               <FeatureCard
-                icon={<Shield className="h-8 w-8 text-primary" />}
-                title="Secure by Default"
-                description="Authentication, RLS policies, and security best practices baked in from the start."
+                title="See the real deals"
+                description="We pull this week's sale items from nearby stores and surface only the ones meeting your % off threshold, grouped by store."
               />
               <FeatureCard
-                icon={<Smartphone className="h-8 w-8 text-primary" />}
-                title="Cross-Platform"
-                description="Share code between web and mobile with our unified API and design system."
+                title="Cook the savings"
+                description="Sale-driven meal ideas with cost per serving, full recipes, and a deduplicated shopping list organized by store."
               />
             </div>
           </div>
@@ -81,7 +75,7 @@ export default function HomePage() {
       <footer className="border-t py-8">
         <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-sm text-muted-foreground">
-            Built with Golden. The source code is available on GitHub.
+            Grocery Savings — meals from this week&apos;s deals.
           </p>
           <div className="flex gap-4">
             <Link
@@ -104,17 +98,14 @@ export default function HomePage() {
 }
 
 function FeatureCard({
-  icon,
   title,
   description,
 }: {
-  icon: React.ReactNode
   title: string
   description: string
 }) {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="mb-4 rounded-full bg-primary/10 p-3">{icon}</div>
       <h3 className="mb-2 text-xl font-semibold">{title}</h3>
       <p className="text-muted-foreground">{description}</p>
     </div>
