@@ -43,7 +43,8 @@ export function SignUpForm() {
       const fieldErrors: Partial<SignUpInput> = {}
       result.error.issues.forEach((issue) => {
         const field = issue.path[0] as keyof SignUpInput
-        fieldErrors[field] = issue.message
+        // Keep the FIRST issue per field — it's the most fundamental one
+        fieldErrors[field] = fieldErrors[field] ?? issue.message
       })
       setErrors(fieldErrors)
       return
@@ -72,7 +73,7 @@ export function SignUpForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="fullName">Name</Label>
         <Input

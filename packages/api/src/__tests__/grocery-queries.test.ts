@@ -78,16 +78,18 @@ describe('recipeTemplateQueries', () => {
       instructions: ['Chop', 'Fry', 'Serve'],
       assumedStaples: ['oil', 'salt'],
     })
-    // slots jsonb passes through as the RecipeSlot[] contract shape
+    // slots jsonb is TRANSFORMED to camelCase, not passed through —
+    // the engine reads slot.ingredientKeys/pantryStaple (regression: a
+    // snake_case passthrough here silently produced zero meal matches)
     expect(t.slots).toEqual([
       {
         slot: 'Protein',
         role: 'protein',
-        ingredient_keys: ['tofu', 'chicken_breast'],
+        ingredientKeys: ['tofu', 'chicken_breast'],
         quantity: 1,
         unit: 'lb',
         optional: false,
-        pantry_staple: false,
+        pantryStaple: false,
       },
     ])
   })

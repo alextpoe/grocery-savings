@@ -7,11 +7,25 @@ import { type Database } from '../types/database'
 
 type Client = SupabaseClient<Database>
 
+/** Raw shape of one entry in the `recipe_templates.slots` jsonb column. */
+interface RecipeSlotRow {
+  slot: string
+  role: RecipeSlot['role']
+  ingredient_keys: string[]
+  quantity: number
+  unit: string
+  optional: boolean
+  pantry_staple: boolean
+}
+
 /**
  * Map a `recipe_templates` row into the matching contract `RecipeTemplate`
- * shape (snake_case → camelCase; `slots` jsonb cast to RecipeSlot[]).
+ * shape. The `slots` jsonb stores snake_case keys; the engine reads
+ * camelCase — each slot must be transformed, not just cast.
  */
 function mapRecipeTemplate(row: RecipeTemplateRow): RecipeTemplate {
+  const rawSlots = (row.slots as unknown as RecipeSlotRow[]) ?? []
+
   return {
     id: row.id,
     name: row.name,
@@ -19,7 +33,15 @@ function mapRecipeTemplate(row: RecipeTemplateRow): RecipeTemplate {
     dietaryTags: row.dietary_tags,
     servings: row.servings,
     instructions: row.instructions,
-    slots: (row.slots as unknown as RecipeSlot[]) ?? [],
+    slots: rawSlots.map((s) => ({
+      slot: s.slot,
+      role: s.role,
+      ingredientKeys: s.ingredient_keys,
+      quantity: Number(s.quantity),
+      unit: s.unit,
+      optional: s.optional,
+      pantryStaple: s.pantry_staple,
+    })),
     assumedStaples: row.assumed_staples,
   }
 }

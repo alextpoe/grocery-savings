@@ -62,7 +62,7 @@ test.describe('Authentication', () => {
       ).toBeVisible()
       await expect(page.getByLabel(/name/i)).toBeVisible()
       await expect(page.getByLabel(/email/i)).toBeVisible()
-      await expect(page.getByLabel('Password')).toBeVisible()
+      await expect(page.getByLabel('Password', { exact: true })).toBeVisible()
       await expect(page.getByLabel(/confirm password/i)).toBeVisible()
       await expect(
         page.getByRole('button', { name: /sign up/i })
@@ -76,7 +76,7 @@ test.describe('Authentication', () => {
 
       await page.getByLabel(/name/i).fill('Test User')
       await page.getByLabel(/email/i).fill('test@example.com')
-      await page.getByLabel('Password').fill('Password123')
+      await page.getByLabel('Password', { exact: true }).fill('Password123')
       await page.getByLabel(/confirm password/i).fill('DifferentPassword')
       await page.getByRole('button', { name: /sign up/i }).click()
 
@@ -88,7 +88,7 @@ test.describe('Authentication', () => {
 
       await page.getByLabel(/name/i).fill('Test User')
       await page.getByLabel(/email/i).fill('test@example.com')
-      await page.getByLabel('Password').fill('weak')
+      await page.getByLabel('Password', { exact: true }).fill('weak')
       await page.getByLabel(/confirm password/i).fill('weak')
       await page.getByRole('button', { name: /sign up/i }).click()
 
