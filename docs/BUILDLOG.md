@@ -79,6 +79,14 @@ the core flow, GitHub Actions CI green on github.com/alextpoe/grocery-savings.
    blocked the Zod path (5 e2e failures); error mapping kept the LAST Zod issue per field
    (spec expects first). Both fixed. TEMPLATE BACKPORT CANDIDATE.
 
+### GitHub CI — run 27324206433 (push to main, 2026-06-10)
+
+**All 4 jobs SUCCESS: Lint ✓ Type Check ✓ Test ✓ E2E Tests ✓** — the E2E job booted a
+fresh Supabase inside CI, ran the seed, started the dev server via Playwright's webServer,
+and passed the 18-test chromium suite. The gated preview/eas workflows did not trigger on
+push, as designed. (Note for later: GitHub annotations warn checkout/setup-node/pnpm
+actions need Node 24-compatible versions before 2026-09-16.)
+
 ### Final local gate
 
 - `pnpm verify` — green (18 turbo tasks)
