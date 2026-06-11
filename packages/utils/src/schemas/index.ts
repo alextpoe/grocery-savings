@@ -59,6 +59,31 @@ export const paginationSchema = z.object({
 export const idSchema = z.string().uuid('Invalid ID format')
 
 /**
+ * Grocery-savings preferences
+ *
+ * Enum values mirror the `DietaryRestriction` type in
+ * `@grocery-savings/utils/matching` — keep the two in lockstep.
+ */
+export const dietaryRestrictionSchema = z.enum([
+  'dairy_free',
+  'gluten_free',
+  'no_fish',
+  'no_pork',
+  'vegetarian',
+  'vegan',
+  'nut_free',
+])
+
+export const preferencesSchema = z.object({
+  zip: z.string().regex(/^\d{5}$/, 'Enter a 5-digit ZIP code'),
+  radiusMiles: z.number().int().min(1).max(50).default(10),
+  householdSize: z.number().int().min(1).max(12).default(4),
+  dietaryRestrictions: z.array(dietaryRestrictionSchema).default([]),
+  budgetPerServing: z.number().positive().max(50).default(4),
+  minDiscountPercent: z.number().min(0).max(90).default(25),
+})
+
+/**
  * Types
  */
 export type SignInInput = z.infer<typeof signInSchema>
@@ -67,3 +92,5 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>
 export type PaginationInput = z.infer<typeof paginationSchema>
+export type DietaryRestrictionInput = z.infer<typeof dietaryRestrictionSchema>
+export type PreferencesInput = z.infer<typeof preferencesSchema>

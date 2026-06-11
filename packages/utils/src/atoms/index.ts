@@ -63,3 +63,20 @@ export const addToastAtom = atom(null, (get, set, toast: Omit<Toast, 'id'>) => {
 export const removeToastAtom = atom(null, (get, set, id: string) => {
   set(toastsAtom, (toasts) => toasts.filter((t) => t.id !== id))
 })
+
+/**
+ * Grocery-savings client state
+ *
+ * Preferences persist to localStorage (web) / AsyncStorage (mobile); the
+ * computed meal plan is ephemeral. Type-only imports keep the shared root
+ * barrel free of web/Node-only code.
+ */
+import type { MealPlan } from '../matching/types'
+import type { PreferencesInput } from '../schemas'
+
+export const preferencesAtom = atomWithStorage<PreferencesInput | null>(
+  'gs-preferences',
+  null
+)
+
+export const mealPlanAtom = atom<MealPlan | null>(null)
