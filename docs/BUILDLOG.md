@@ -87,6 +87,23 @@ and passed the 18-test chromium suite. The gated preview/eas workflows did not t
 push, as designed. (Note for later: GitHub annotations warn checkout/setup-node/pnpm
 actions need Node 24-compatible versions before 2026-09-16.)
 
+### 2026-06-11 — Backport + CI hardening
+
+Backported the five template bugs to golden-repo (its commit 9290829); golden's e2e suite
+ran for the first time ever (15/15, after fixing two latent spec bugs it surfaced).
+Then hardened CI in both repos — three more findings, each verified by a CI run here:
+
+6. **Node-24 action deprecations** (forced 2026-06-16): checkout@v5, setup-node@v5,
+   pnpm/action-setup@v4 — which REJECTS the `version:` input when package.json has
+   `packageManager`; dropped the input so packageManager is the single source of truth.
+7. **`supabase/setup-cli version: latest`** resolves the release via the GitHub API and
+   hit rate limits → pinned to 2.75.0.
+8. **Supabase ports inside the Linux ephemeral range (32768-60999)** flake in CI with
+   "address already in use" → moved to 213xx here / 203xx in the template; the
+   new-project skill now assigns each clone its own sub-ephemeral port block.
+
+Final CI run after hardening: **all 4 jobs success** with zero deprecation annotations.
+
 ### Final local gate
 
 - `pnpm verify` — green (18 turbo tasks)
